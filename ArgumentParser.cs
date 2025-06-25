@@ -153,7 +153,7 @@ namespace SqlServerScriptsExport
         public static void ShowUsage()
         {
             Console.WriteLine("Usage:");
-            Console.WriteLine("  SqlScriptGenerator [options]");
+            Console.WriteLine("  SqlServerScriptsExport [options]");
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine("  -s, --server <server>      SQL Server name or instance");
@@ -165,8 +165,8 @@ namespace SqlServerScriptsExport
             Console.WriteLine("  -h, --help                 Show this help message");
             Console.WriteLine();
             Console.WriteLine("Examples:");
-            Console.WriteLine("  SqlScriptGenerator -s localhost -d MyDatabase -t");
-            Console.WriteLine("  SqlScriptGenerator -s .\\SQLEXPRESS -d MyDatabase -u sa -p password");
+            Console.WriteLine("  SqlServerScriptsExport -s localhost -d MyDatabase -t");
+            Console.WriteLine("  SqlServerScriptsExport -s .\\SQLEXPRESS -d MyDatabase -u sa -p password");
             Console.WriteLine();
             Console.WriteLine("If no arguments are provided, interactive mode will be used.");
         }
