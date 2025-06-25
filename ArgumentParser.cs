@@ -4,7 +4,7 @@ namespace SqlServerScriptsExport
 {
     public static class ArgumentParser
     {
-        public static DatabaseConfig? ParseArguments(string[] args)
+        public static (DatabaseConfig?, AppOptions?) ParseArguments(string[] args)
         {
             if (args.Length == 0)
             {
@@ -14,6 +14,7 @@ namespace SqlServerScriptsExport
 
             // Command line mode
             var config = new DatabaseConfig();
+            var options = new AppOptions();
             
             for (int i = 0; i < args.Length; i++)
             {
@@ -48,18 +49,40 @@ namespace SqlServerScriptsExport
                         if (i + 1 < args.Length)
                             config.Password = args[++i];
                         break;
+                    case "--no-encrypt":
+                        config.Encrypt = false;
+                        break;
+                    case "--verbose":
+                        options.Verbose = true;
+                        break;
+                    case "--quiet":
+                        options.Quiet = true;
+                        break;
+                    case "--no-progress":
+                        options.NoProgress = true;
+                        break;
+                    case "--log-file":
+                        if (i + 1 < args.Length)
+                            options.LogFilePath = args[++i];
+                        break;
+                    case "--timeout":
+                        if (i + 1 < args.Length && int.TryParse(args[++i], out int timeout))
+                            options.ConnectionTimeout = timeout;
+                        break;
                     case "-h":
                     case "--help":
-                        return null;
+                        options.ShowHelp = true;
+                        return (null, options);
                 }
             }
 
-            return ValidateConfig(config) ? config : null;
+            return ValidateConfig(config) ? (config, options) : (null, options);
         }
 
-        private static DatabaseConfig GetConfigInteractively()
+        private static (DatabaseConfig, AppOptions) GetConfigInteractively()
         {
             var config = new DatabaseConfig();
+            var options = new AppOptions();
 
             Console.WriteLine("Enter database connection details:");
             Console.WriteLine();
@@ -70,9 +93,9 @@ namespace SqlServerScriptsExport
             Console.Write("Database name: ");
             config.DatabaseName = Console.ReadLine()?.Trim() ?? string.Empty;
 
-            Console.Write("Use Windows Authentication? (y/n) [y]: ");
+            Console.Write("Use Windows Authentication? (y/n) [n]: ");
             var useWindows = Console.ReadLine()?.Trim().ToLower();
-            config.UseTrustedConnection = string.IsNullOrEmpty(useWindows) || useWindows == "y" || useWindows == "yes";
+            config.UseTrustedConnection = useWindows == "y" || useWindows == "yes";
 
             if (!config.UseTrustedConnection)
             {
@@ -87,9 +110,13 @@ namespace SqlServerScriptsExport
             var outputPath = Console.ReadLine()?.Trim();
             config.OutputPath = string.IsNullOrEmpty(outputPath) ? "./Scripts" : outputPath;
 
+            Console.Write("Enable encryption? (y/n) [y]: ");
+            var useEncryption = Console.ReadLine()?.Trim().ToLower();
+            config.Encrypt = string.IsNullOrEmpty(useEncryption) || useEncryption == "y" || useEncryption == "yes";
+
             Console.WriteLine();
 
-            return ValidateConfig(config) ? config : throw new ArgumentException("Invalid configuration provided.");
+            return ValidateConfig(config) ? (config, options) : throw new ArgumentException("Invalid configuration provided.");
         }
 
         private static string ReadPassword()
@@ -162,11 +189,18 @@ namespace SqlServerScriptsExport
             Console.WriteLine("  -t, --trusted              Use Windows Authentication");
             Console.WriteLine("  -u, --username <username>  SQL Server username");
             Console.WriteLine("  -p, --password <password>  SQL Server password");
+            Console.WriteLine("  --no-encrypt               Disable connection encryption (enabled by default)");
+            Console.WriteLine("  --verbose                  Enable verbose logging");
+            Console.WriteLine("  --quiet                    Minimize console output");
+            Console.WriteLine("  --no-progress              Disable progress reporting");
+            Console.WriteLine("  --log-file <path>          Write logs to file");
+            Console.WriteLine("  --timeout <seconds>        Connection timeout (default: 30)");
             Console.WriteLine("  -h, --help                 Show this help message");
             Console.WriteLine();
             Console.WriteLine("Examples:");
             Console.WriteLine("  SqlServerScriptsExport -s localhost -d MyDatabase -t");
             Console.WriteLine("  SqlServerScriptsExport -s .\\SQLEXPRESS -d MyDatabase -u sa -p password");
+            Console.WriteLine("  SqlServerScriptsExport -s localhost -d MyDatabase -t --no-encrypt --verbose --log-file export.log");
             Console.WriteLine();
             Console.WriteLine("If no arguments are provided, interactive mode will be used.");
         }
