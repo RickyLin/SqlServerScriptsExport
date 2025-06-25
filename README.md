@@ -6,12 +6,12 @@ A .NET 9 console application that generates SQL definition scripts for all datab
 
 ```
 SqlServerScriptsExport/
-├── Program.cs                 # Main entry point
-├── DatabaseConfig.cs          # Database configuration class
-├── ArgumentParser.cs          # Command line and interactive argument parsing
-├── SqlScriptGenerator.cs      # Core script generation logic
-├── SqlScriptGenerator.csproj  # Project file
-└── README.md                  # This file
+├── Program.cs                      # Main entry point
+├── DatabaseConfig.cs               # Database configuration class
+├── ArgumentParser.cs               # Command line and interactive argument parsing
+├── SqlServerScriptsExport.cs       # Main application class with script generation logic
+├── SqlServerScriptsExport.csproj   # Project file
+└── README.md                       # This file
 ```
 
 ## Features
@@ -114,7 +114,7 @@ Scripts/
 - **Program**: Main entry point and error handling
 - **DatabaseConfig**: Database connection configuration and connection string building
 - **ArgumentParser**: Command line argument parsing and interactive configuration
-- **SqlScriptGenerator**: Core logic for generating and organizing SQL scripts
+- **SqlServerScriptsExport**: Main application class that handles script generation and file organization
 
 ## Next Steps
 
