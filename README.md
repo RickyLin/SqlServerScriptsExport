@@ -24,6 +24,7 @@ SqlServerScriptsExport/
 ### Core Functionality
 - **Complete Object Extraction**: Extracts definitions for Views, Stored Procedures, Functions (Scalar and Table-valued), and Triggers
 - **Intelligent Organization**: Organizes scripts into category-specific folders with proper naming conventions
+- **Configurable Script Headers**: Optional professional headers with metadata for generated scripts
 - **Connection Testing**: Validates database connectivity before processing begins
 - **Atomic File Operations**: Uses temporary files with atomic moves to prevent data corruption
 
@@ -79,6 +80,9 @@ dotnet run -- -s localhost -d MyDatabase -t --quiet --no-progress
 - `-u, --username <username>` - SQL Server username (required if not using -t)
 - `-p, --password <password>` - SQL Server password (required if not using -t)
 - `--timeout <seconds>` - Connection timeout in seconds (default: 30)
+
+#### Script Generation Options
+- `--header` - Include script headers in generated files (disabled by default)
 
 #### Logging and Output Options
 - `--verbose` - Enable detailed logging and debug information
@@ -142,7 +146,7 @@ Scripts/
 
 ### Generated Script Format
 
-Each generated script includes a professional header with metadata:
+Each generated script can optionally include a professional header with metadata (when using the `--header` option):
 
 ```sql
 ------------------------------------------------------------------------------
@@ -218,9 +222,14 @@ The application provides comprehensive error handling with specific guidance:
 dotnet run -- -s localhost -d AdventureWorks -t
 ```
 
-### Production-Ready Export with Logging
+### Export with Script Headers
 ```bash
-dotnet run -- -s PROD-SQL01 -d MyApp_Production -u service_account -p secret123 --verbose --log-file "export_$(date +%Y%m%d).log" --timeout 60
+dotnet run -- -s localhost -d AdventureWorks -t --header
+```
+
+### Production-Ready Export with Logging and Headers
+```bash
+dotnet run -- -s PROD-SQL01 -d MyApp_Production -u service_account -p secret123 --verbose --log-file "export_$(date +%Y%m%d).log" --timeout 60 --header
 ```
 
 ### Automated Export (CI/CD)

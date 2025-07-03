@@ -69,6 +69,9 @@ namespace SqlServerScriptsExport
                         if (i + 1 < args.Length && int.TryParse(args[++i], out int timeout))
                             options.ConnectionTimeout = timeout;
                         break;
+                    case "--header":
+                        options.IncludeScriptHeader = true;
+                        break;
                     case "-h":
                     case "--help":
                         options.ShowHelp = true;
@@ -113,6 +116,10 @@ namespace SqlServerScriptsExport
             Console.Write("Enable encryption? (y/n) [y]: ");
             var useEncryption = Console.ReadLine()?.Trim().ToLower();
             config.Encrypt = string.IsNullOrEmpty(useEncryption) || useEncryption == "y" || useEncryption == "yes";
+
+            Console.Write("Include script headers? (y/n) [n]: ");
+            var includeHeaders = Console.ReadLine()?.Trim().ToLower();
+            options.IncludeScriptHeader = includeHeaders == "y" || includeHeaders == "yes";
 
             Console.WriteLine();
 
@@ -195,6 +202,7 @@ namespace SqlServerScriptsExport
             Console.WriteLine("  --no-progress              Disable progress reporting");
             Console.WriteLine("  --log-file <path>          Write logs to file");
             Console.WriteLine("  --timeout <seconds>        Connection timeout (default: 30)");
+            Console.WriteLine("  --header                   Include script headers in generated files");
             Console.WriteLine("  -h, --help                 Show this help message");
             Console.WriteLine();
             Console.WriteLine("Examples:");

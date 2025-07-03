@@ -38,7 +38,7 @@ namespace SqlServerScriptsExport
                 var progressReporter = new ProgressReporter(showProgress, logger);
 
                 // Initialize the script generator
-                var generator = new SqlServerScriptsExport(config, logger, progressReporter);
+                var generator = new SqlServerScriptsExport(config, logger, progressReporter, options ?? new AppOptions());
                 
                 // Generate all scripts
                 await generator.GenerateAllScriptsAsync();

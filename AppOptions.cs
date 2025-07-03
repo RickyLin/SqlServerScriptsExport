@@ -8,5 +8,6 @@ namespace SqlServerScriptsExport
         public string? LogFilePath { get; set; }
         public int ConnectionTimeout { get; set; } = 30;
         public bool ShowHelp { get; set; } = false;
+        public bool IncludeScriptHeader { get; set; } = false;
     }
 }

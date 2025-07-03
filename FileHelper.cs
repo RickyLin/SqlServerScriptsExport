@@ -34,7 +34,7 @@ namespace SqlServerScriptsExport
             return fileName;
         }
 
-        public static async Task WriteScriptFileAsync(string filePath, string content, string objectName, string objectType, string sourceDatabase, Logger logger)
+        public static async Task WriteScriptFileAsync(string filePath, string content, string objectName, string objectType, string sourceDatabase, bool includeHeader, Logger logger)
         {
             try
             {
@@ -45,9 +45,13 @@ namespace SqlServerScriptsExport
                     Directory.CreateDirectory(directory);
                 }
 
-                // Generate script header
-                var header = GenerateScriptHeader(objectName, objectType, sourceDatabase);
-                var fullContent = header + Environment.NewLine + content;
+                // Generate script header if requested
+                var fullContent = content;
+                if (includeHeader)
+                {
+                    var header = GenerateScriptHeader(objectName, objectType, sourceDatabase);
+                    fullContent = header + Environment.NewLine + content;
+                }
 
                 // Write to temporary file first, then rename for atomic operation
                 var tempFilePath = filePath + ".tmp";

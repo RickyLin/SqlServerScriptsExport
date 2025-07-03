@@ -13,12 +13,14 @@ namespace SqlServerScriptsExport
         private readonly DatabaseConfig _config;
         private readonly Logger _logger;
         private readonly ProgressReporter _progressReporter;
+        private readonly AppOptions _options;
 
-        public SqlServerScriptsExport(DatabaseConfig config, Logger logger, ProgressReporter progressReporter)
+        public SqlServerScriptsExport(DatabaseConfig config, Logger logger, ProgressReporter progressReporter, AppOptions options)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _progressReporter = progressReporter ?? throw new ArgumentNullException(nameof(progressReporter));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task GenerateAllScriptsAsync()
@@ -316,7 +318,7 @@ namespace SqlServerScriptsExport
                     var fileName = FileHelper.SanitizeFileName(obj.Name) + ".sql";
                     var filePath = Path.Combine(outputPath, fileName);
 
-                    await FileHelper.WriteScriptFileAsync(filePath, obj.Definition, obj.Name, obj.ObjectType, _config.DatabaseName, _logger);
+                    await FileHelper.WriteScriptFileAsync(filePath, obj.Definition, obj.Name, obj.ObjectType, _config.DatabaseName, _options.IncludeScriptHeader, _logger);
                     
                     filesCreated++;
                     _progressReporter.ReportProgress(obj.Name);
