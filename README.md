@@ -27,6 +27,7 @@ SqlServerScriptsExport/
 - **Configurable Script Headers**: Optional professional headers with metadata for generated scripts
 - **Connection Testing**: Validates database connectivity before processing begins
 - **Atomic File Operations**: Uses temporary files with atomic moves to prevent data corruption
+- **Output Directory Safety**: Pre-export check warns if the output directory isn’t empty; interactive prompt defaults to No, and `--force-clear` enables non-interactive deletion
 
 ### Advanced Error Handling
 - **Specific SQL Error Handling**: Provides meaningful error messages for common SQL Server errors
@@ -45,7 +46,7 @@ SqlServerScriptsExport/
 - `StoredProcedures/` - All stored procedure definitions  
 - `Functions_TableValued/` - Table-valued function definitions
 - `Functions_ScalarValued/` - Scalar-valued function definitions
-- `[TableName]/Triggers/` - Trigger definitions with table name as top-level folder, then "Triggers" subfolder
+- `Tables/[TableName]/Triggers/` - Trigger definitions under a top-level "Tables" folder
 
 ## Usage
 
@@ -80,6 +81,7 @@ dotnet run -- -s localhost -d MyDatabase -t --quiet --no-progress
 - `-u, --username <username>` - SQL Server username (required if not using -t)
 - `-p, --password <password>` - SQL Server password (required if not using -t)
 - `--timeout <seconds>` - Connection timeout in seconds (default: 30)
+- `--no-encrypt` - Disable connection encryption (encryption is enabled by default)
 
 #### Script Generation Options
 - `--header` - Include script headers in generated files (disabled by default)
@@ -89,7 +91,16 @@ dotnet run -- -s localhost -d MyDatabase -t --quiet --no-progress
 - `--quiet` - Minimize console output (errors and warnings still shown)
 - `--no-progress` - Disable progress reporting
 - `--log-file <path>` - Write logs to specified file
+- `--force-clear` - If the output directory exists and is not empty, delete it without prompting (useful in CI/CD)
 - `-h, --help` - Show comprehensive help message
+
+### Output Directory Handling
+
+- If the output directory does not exist, it will be created.
+- If it exists and is empty, export proceeds without prompts.
+- If it exists and is not empty:
+    - In interactive scenarios, you’ll be prompted to clear it (default is No; pressing Enter continues without clearing).
+    - With `--force-clear`, the directory is deleted recursively without prompting and then recreated cleanly.
 ## Requirements
 
 - .NET 9.0 or later
@@ -135,13 +146,14 @@ Scripts/
 ├── Functions_ScalarValued/
 │   ├── CalculateTotal.sql
 │   └── FormatCurrency.sql
-├── Customers/                     # Table name as top-level folder
-│   └── Triggers/                  # Hard-coded "Triggers" folder
-│       └── CustomerAuditTrigger.sql
-└── Orders/                        # Table name as top-level folder
-    └── Triggers/                  # Hard-coded "Triggers" folder
-        ├── OrderInsertTrigger.sql
-        └── OrderUpdateTrigger.sql
+└── Tables/                        # Top-level folder for all table-related objects
+    ├── Customers/                 # Table name under "Tables"
+    │   └── Triggers/              # Hard-coded "Triggers" folder
+    │       └── CustomerAuditTrigger.sql
+    └── Orders/                    # Table name under "Tables"
+        └── Triggers/              # Hard-coded "Triggers" folder
+            ├── OrderInsertTrigger.sql
+            └── OrderUpdateTrigger.sql
 ```
 
 ### Generated Script Format

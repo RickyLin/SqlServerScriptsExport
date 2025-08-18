@@ -35,6 +35,9 @@ namespace SqlServerScriptsExport
                 // Test connection first
                 await TestConnectionAsync();
 
+                // Validate and prepare output directory (prompt to clear if not empty)
+                ValidateAndPrepareOutputDirectory();
+
                 // Create output directory structure
                 CreateDirectoryStructure();
 
@@ -51,6 +54,75 @@ namespace SqlServerScriptsExport
             {
                 _logger.LogError("Failed to generate scripts", ex);
                 throw;
+            }
+        }
+
+        private void ValidateAndPrepareOutputDirectory()
+        {
+            var path = _config.OutputPath;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new InvalidOperationException("Output directory path is not specified.");
+            }
+
+            // Guard against the path being an existing file
+            if (File.Exists(path))
+            {
+                throw new InvalidOperationException($"The specified output path '{path}' is a file, not a directory.");
+            }
+
+            if (!Directory.Exists(path))
+            {
+                // Nothing to validate yet
+                return;
+            }
+
+            // If directory exists but is empty, continue
+            bool hasEntries;
+            try
+            {
+                hasEntries = Directory.EnumerateFileSystemEntries(path).GetEnumerator().MoveNext();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to inspect output directory '{path}': {ex.Message}", ex);
+            }
+
+            if (!hasEntries)
+            {
+                return;
+            }
+
+            // If force-clear option is set, delete without prompting
+            bool confirm;
+            if (_options.ForceClearOutput)
+            {
+                _logger.LogInfo("--force-clear specified: clearing output directory without prompt.");
+                confirm = true;
+            }
+            else
+            {
+                // Prompt user for confirmation to clear the directory. Default is No.
+                Console.WriteLine();
+                Console.WriteLine($"Output directory '{path}' is not empty.");
+                Console.Write("Do you want to clear ALL files and folders in this directory before export? [y/N]: ");
+                var input = Console.ReadLine()?.Trim().ToLowerInvariant();
+                confirm = input == "y" || input == "yes";
+            }
+            if (!confirm)
+            {
+                _logger.LogInfo("Proceeding without clearing the output directory.");
+                return;
+            }
+
+            try
+            {
+                Directory.Delete(path, recursive: true);
+                _logger.LogInfo($"Deleted existing output directory: {path}");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to delete output directory '{path}': {ex.Message}", ex);
             }
         }
 
@@ -96,7 +168,8 @@ namespace SqlServerScriptsExport
                 Path.Combine(_config.OutputPath, "Views"),
                 Path.Combine(_config.OutputPath, "StoredProcedures"),
                 Path.Combine(_config.OutputPath, "Functions_TableValued"),
-                Path.Combine(_config.OutputPath, "Functions_ScalarValued")
+                Path.Combine(_config.OutputPath, "Functions_ScalarValued"),
+                Path.Combine(_config.OutputPath, "Tables")
             };
 
             foreach (var directory in directories)

@@ -95,8 +95,8 @@ namespace SqlServerScriptsExport
                 DatabaseObjectType.ScalarFunction => Path.Combine(baseOutputPath, "Functions_ScalarValued"),
                 DatabaseObjectType.TableValuedFunction => Path.Combine(baseOutputPath, "Functions_TableValued"),
                 DatabaseObjectType.Trigger when !string.IsNullOrEmpty(parentTable) => 
-                    Path.Combine(baseOutputPath, SanitizeFileName(parentTable), "Triggers"),
-                DatabaseObjectType.Trigger => Path.Combine(baseOutputPath, "UnknownTable", "Triggers"),
+                    Path.Combine(baseOutputPath, "Tables", SanitizeFileName(parentTable), "Triggers"),
+                DatabaseObjectType.Trigger => Path.Combine(baseOutputPath, "Tables", "UnknownTable", "Triggers"),
                 _ => baseOutputPath
             };
         }

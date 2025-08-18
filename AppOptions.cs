@@ -9,5 +9,6 @@ namespace SqlServerScriptsExport
         public int ConnectionTimeout { get; set; } = 30;
         public bool ShowHelp { get; set; } = false;
         public bool IncludeScriptHeader { get; set; } = false;
+        public bool ForceClearOutput { get; set; } = false;
     }
 }

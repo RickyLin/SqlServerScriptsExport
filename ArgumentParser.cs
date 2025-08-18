@@ -72,6 +72,9 @@ namespace SqlServerScriptsExport
                     case "--header":
                         options.IncludeScriptHeader = true;
                         break;
+                    case "--force-clear":
+                        options.ForceClearOutput = true;
+                        break;
                     case "-h":
                     case "--help":
                         options.ShowHelp = true;
@@ -113,7 +116,7 @@ namespace SqlServerScriptsExport
             var outputPath = Console.ReadLine()?.Trim();
             config.OutputPath = string.IsNullOrEmpty(outputPath) ? "./Scripts" : outputPath;
 
-            Console.Write("Enable encryption? (y/n) [y]: ");
+            Console.Write("Enable connection encryption? (Y/n) ");
             var useEncryption = Console.ReadLine()?.Trim().ToLower();
             config.Encrypt = string.IsNullOrEmpty(useEncryption) || useEncryption == "y" || useEncryption == "yes";
 
@@ -203,6 +206,7 @@ namespace SqlServerScriptsExport
             Console.WriteLine("  --log-file <path>          Write logs to file");
             Console.WriteLine("  --timeout <seconds>        Connection timeout (default: 30)");
             Console.WriteLine("  --header                   Include script headers in generated files");
+            Console.WriteLine("  --force-clear              Non-interactive: clear output directory without prompting");
             Console.WriteLine("  -h, --help                 Show this help message");
             Console.WriteLine();
             Console.WriteLine("Examples:");
