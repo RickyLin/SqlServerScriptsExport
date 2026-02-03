@@ -1,6 +1,6 @@
 # SQL Server Database Script Generator
 
-A comprehensive .NET 9 console application that generates SQL definition scripts for all database objects from a SQL Server database with advanced error handling, logging, and progress reporting.
+A comprehensive .NET 10 console application that generates SQL definition scripts for all database objects from a SQL Server database with advanced error handling, logging, and progress reporting.
 
 ## Project Structure
 
@@ -103,14 +103,14 @@ dotnet run -- -s localhost -d MyDatabase -t --quiet --no-progress
     - With `--force-clear`, the directory is deleted recursively without prompting and then recreated cleanly.
 ## Requirements
 
-- .NET 9.0 or later
+- .NET 10.0 or later
 - Access to SQL Server database (SQL Server 2012 or later recommended)
 - Appropriate permissions to read database schema and system views
 - Sufficient disk space for generated script files
 
 ## Dependencies
 
-- **Microsoft.Data.SqlClient 5.2.2** - Modern SQL Server client library with enhanced security and performance
+- **Microsoft.Data.SqlClient 6.1.4** - Modern SQL Server client library with enhanced security and performance
 
 ## Building
 
@@ -212,7 +212,7 @@ The application provides comprehensive error handling with specific guidance:
 - **Namespace**: SqlServerScriptsExport
 - **ImplicitUsings**: Disabled - All using statements are explicitly declared for clarity
 - **SQL Client**: Uses Microsoft.Data.SqlClient for enhanced security and modern features
-- **Target Framework**: .NET 9.0 for latest performance improvements
+- **Target Framework**: .NET 10.0 for latest performance improvements
 - **Architecture**: Clean separation of concerns with SOLID principles
 
 ## Class Responsibilities
